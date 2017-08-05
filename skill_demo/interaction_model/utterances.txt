@@ -1,0 +1,3 @@
+SkillInfoIntent what is the simple compliment
+SkillInfoIntent tell me about simple compliment
+SkillMainIntent to give me a compliment
