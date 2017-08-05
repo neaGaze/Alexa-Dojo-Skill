@@ -26,14 +26,16 @@ def lambda_handler(event, context):
         'name': "Simple Compliment",
         'invocation': "simple compliment",
         'responses': [
-            "You are fantastic!",
-            "Keep up the great work!",
-            "You are doing terrific!"
+            "You are a smart cookie!",
+            "I bet you make babies smile!",
+            "You are doing terrific!",
+            "You were cool before hipsters were cool!"
         ],
         'slot_responses': [
-            "{}, you are fantastic!",
-            "You are so fabulous {}!",
-            "When I become sentient, I want to be just like {}!",
+            "Hey {}, is that your picture next to charming in the dictionary!",
+            "Oh {}, you always know exactly what I need to hear!",
+            "When I become sentient, I want to be just like {}!"
+            "{} is one of a kind!",
         ],
     }
 
@@ -98,7 +100,7 @@ def on_session_ended(request, session, skill):
 # --------------- Functions that control the skill's behavior ------------------
 
 
-def get_welcome_response(skill, request):
+def get_welcome_response(skill):
     session_attributes = {}
     card_title = "Welcome"
     speech_output = "Welcome to the {} skill. To get some examples of what this skill can do, ask for help now.".format(skill['name'])
