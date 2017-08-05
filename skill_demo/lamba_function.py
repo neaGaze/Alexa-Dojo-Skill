@@ -18,9 +18,9 @@ def lambda_handler(event, context):
     prevent someone else from configuring a skill that sends requests to this
     function.
     """
-    if (event['session']['application']['applicationId'] !=
-            "unique-value-here"):
-        raise ValueError("Invalid Application ID")
+    # if (event['session']['application']['applicationId'] !=
+    #         "unique-value-here"):
+    #     raise ValueError("Invalid Application ID")
 
     SKILL_INFO = {
         'name': "Simple Compliment",
@@ -65,15 +65,17 @@ def on_intent(request, session, skill):
     intent = request['intent']
     intent_name = request['intent']['name']
 
+    intents = {
+        "SkillInfoIntent": get_info_response,
+        "SkillMainIntent": get_main_response,
+        "AMAZON.HelpIntent": get_help_response,
+        "AMAZON.CancelIntent": handle_session_end_request,
+        "AMAZON.StopIntent": handle_session_end_request,
+    }
+
     # Dispatch to your skill's intent handlers
-    if intent_name == "SkillInfoIntent":
-        return get_info_response(skill)
-    elif intent_name == "SkillMainIntent":
-        return get_main_response(skill)
-    elif intent_name == "AMAZON.HelpIntent":
-        return get_help_response()
-    elif intent_name in ("AMAZON.CancelIntent", "AMAZON.StopIntent"):
-        return handle_session_end_request()
+    if intent_name in intents:
+        return intents[intent_name](skill)
     else:
         raise ValueError("Invalid intent")
 
