@@ -31,6 +31,7 @@ def lambda_handler(event, context):
             "You are doing terrific!",
             "You were cool before hipsters were cool!"
         ],
+        'slot_name': "Person",
         'slot_responses': [
             "Hey {}, is that your picture next to charming in the dictionary!",
             "Oh {}, you always know exactly what I need to hear!",
@@ -139,12 +140,12 @@ def get_slot_response(skill, request):
     card_title = "{}".format(skill['name'])
     should_end_session = True
 
-    person = request["intent"]["slots"]["Person"]["value"]
+    slot = request["intent"]["slots"][skill['slot_name']]["value"]
     responses = skill['slot_responses']
     random_index = random.randint(0, len(responses) -1)
     response = responses[random_index]
 
-    speech_output = response.format(person)
+    speech_output = response.format(slot)
     reprompt_text = speech_output
 
     return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
