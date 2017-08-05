@@ -22,8 +22,8 @@ def lambda_handler(event, context):
     #     raise ValueError("Invalid Application ID")
 
     SKILL_INFO = {
-        'skill_name': "Simple Compliment",
-        'invocation_name': "simple compliment",
+        'name': "Simple Compliment",
+        'invocation': "simple compliment",
     }
 
     if event['session']['new']:
@@ -50,7 +50,7 @@ def on_session_started(request, session):
 def on_launch(request, session, skill):
     """ Called when the user launches the skill without specifying what they want """
 
-    return get_welcome_response()
+    return get_welcome_response(skill)
 
 
 def on_intent(request, session, skill):
@@ -61,7 +61,7 @@ def on_intent(request, session, skill):
 
     # Dispatch to your skill's intent handlers
     if intent_name == "":
-        return get_info_response()
+        return get_info_response(skill)
     # elif intent_name == "":
     #     return
     elif intent_name == "AMAZON.HelpIntent":
@@ -84,10 +84,10 @@ def on_session_ended(request, session, skill):
 # --------------- Functions that control the skill's behavior ------------------
 
 
-def get_welcome_response():
+def get_welcome_response(skill):
     session_attributes = {}
     card_title = "Welcome"
-    speech_output = "Welcome to the Coding Dojo Skill. Great Job on getting started with your first skill. To get some examples of what this skill can do, ask for help now."
+    speech_output = "Welcome to the {} skill. To get some examples of what this skill can do, ask for help now.".format(skill['name'])
     reprompt_text = speech_output
     should_end_session = False
 
@@ -95,31 +95,32 @@ def get_welcome_response():
         card_title, speech_output, reprompt_text, should_end_session))
 
 
-def get_info_response():
+def get_info_response(skill):
     session_attributes = {}
-    card_title = "Dojo_Info"
-    speech_output = "The Coding Dojo is a 3 month immersive web developement bootcamp. During these 3 months you will learn 3 full web developement stacks. The stacks that we offer are... Django, Rails, Mean, IOS, and PHP."
+    card_title = "{} Info".format(skill['name'])
+    speech_output = "{} is an awesome and custom skill.".format(skill['name'])
     reprompt_text = speech_output
     should_end_session = True
 
     return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
 
 
-def get_help_response():
+def get_help_response(skill):
     session_attributes = {}
     card_title = "Help"
-    speech_output = "Welcome to the help section for the Coding Dojo Skill. A couple of examples of phrases that I can except are... What is the coding dojo... or, who are the instructors. Lets get started now by trying one of these."
+    speech_output = "To use the {} skill, try saying... What is {}.".format(skill['name'], skill['invocation'])
     reprompt_text = speech_output
     should_end_session = False
 
     return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
 
 
-def handle_session_end_request():
-    card_title = "Session Ended"
-    speech_output = "Thank you for using the Coding Dojo skill! We hope you enjoyed the experience."
+def handle_session_end_request(skill):
+    card_title = "{} Ended".format(skill['name'])
+    speech_output = "Thank you for using the {} skill!".format(skill['name'])
     # Setting this to true ends the session and exits the skill.
     should_end_session = True
+    
     return build_response({}, build_speechlet_response(
         card_title, speech_output, None, should_end_session))
 
