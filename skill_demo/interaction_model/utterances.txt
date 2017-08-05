@@ -2,3 +2,5 @@ SkillInfoIntent what is simple compliment
 SkillInfoIntent tell me about simple compliment
 SkillMainIntent to give me a compliment
 SkillMainIntent for a compliment
+SkillSlotIntent to give {Name} a compliment
+SkillSlotIntent to compliment {Name}

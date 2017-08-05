@@ -29,7 +29,12 @@ def lambda_handler(event, context):
             "You are fantastic!",
             "Keep up the great work!",
             "You are doing terrific!"
-        ]
+        ],
+        'slot_responses': [
+            "{}, you are fantastic!",
+            "You are so fabulous {}!",
+            "When I become sentient, I want to be just like {}!",
+        ],
     }
 
     if event['session']['new']:
@@ -68,6 +73,7 @@ def on_intent(request, session, skill):
     intents = {
         "SkillInfoIntent": get_info_response,
         "SkillMainIntent": get_main_response,
+        "SkillSlotIntent": get_slot_response,
         "AMAZON.HelpIntent": get_help_response,
         "AMAZON.CancelIntent": handle_session_end_request,
         "AMAZON.StopIntent": handle_session_end_request,
@@ -75,7 +81,7 @@ def on_intent(request, session, skill):
 
     # Dispatch to your skill's intent handlers
     if intent_name in intents:
-        return intents[intent_name](skill)
+        return intents[intent_name](skill, request)
     else:
         raise ValueError("Invalid intent")
 
@@ -92,7 +98,7 @@ def on_session_ended(request, session, skill):
 # --------------- Functions that control the skill's behavior ------------------
 
 
-def get_welcome_response(skill):
+def get_welcome_response(skill, request):
     session_attributes = {}
     card_title = "Welcome"
     speech_output = "Welcome to the {} skill. To get some examples of what this skill can do, ask for help now.".format(skill['name'])
@@ -103,7 +109,7 @@ def get_welcome_response(skill):
         card_title, speech_output, reprompt_text, should_end_session))
 
 
-def get_info_response(skill):
+def get_info_response(skill, request):
     session_attributes = {}
     card_title = "{} Info".format(skill['name'])
     speech_output = "{} is an awesome and custom skill.".format(skill['name'])
@@ -112,7 +118,7 @@ def get_info_response(skill):
 
     return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
 
-def get_main_response(skill):
+def get_main_response(skill, request):
     session_attributes = {}
     card_title = "{}".format(skill['name'])
     should_end_session = True
@@ -126,8 +132,23 @@ def get_main_response(skill):
 
     return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
 
+def get_slot_response(skill, request):
+    session_attributes = {}
+    card_title = "{}".format(skill['name'])
+    should_end_session = True
 
-def get_help_response(skill):
+    person = request["intent"]["slots"]["Person"]["value"]
+    responses = skill['slot_responses']
+    random_index = random.randint(0, len(responses) -1)
+    response = responses[random_index]
+
+    speech_output = response.format(person)
+    reprompt_text = speech_output
+
+    return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
+
+
+def get_help_response(skill, request):
     session_attributes = {}
     card_title = "Help"
     speech_output = "To use the {} skill, try saying... What is {}.".format(skill['name'], skill['invocation'])
@@ -137,7 +158,7 @@ def get_help_response(skill):
     return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
 
 
-def handle_session_end_request(skill):
+def handle_session_end_request(skill, request):
     card_title = "{} Ended".format(skill['name'])
     should_end_session = True
     speech_output = "Thank you for using the {} skill!".format(skill['name'])
