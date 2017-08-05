@@ -1,6 +1,7 @@
 {
   "intents": [
-    {"intent": "InfoIntent"},
+    {"intent": "SkillInfoIntent"},
+    {"intent": "SkillMainIntent"},
     {"intent": "AMAZON.HelpIntent"},
     {"intent": "AMAZON.CancelIntent"},
     {"intent": "AMAZON.StopIntent"}
