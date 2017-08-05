@@ -5,6 +5,7 @@ For the full code sample visit https://github.com/CodingDojoDallas/Alexa-Dojo-Sk
 """
 
 from __future__ import print_function
+import random
 
 def lambda_handler(event, context):
     """ Route the incoming request based on type (LaunchRequest, IntentRequest,
@@ -24,6 +25,11 @@ def lambda_handler(event, context):
     SKILL_INFO = {
         'name': "Simple Compliment",
         'invocation': "simple compliment",
+        'responses' = [
+            "You are fantastic!",
+            "Keep up the great work!",
+            "You are doing terrfic!"
+        ]
     }
 
     if event['session']['new']:
@@ -60,10 +66,10 @@ def on_intent(request, session, skill):
     intent_name = request['intent']['name']
 
     # Dispatch to your skill's intent handlers
-    if intent_name == "":
+    if intent_name == "SkillInfoIntent":
         return get_info_response(skill)
-    # elif intent_name == "":
-    #     return
+    elif intent_name == "SkillMainIntent":
+        return get_main_response(skill)
     elif intent_name == "AMAZON.HelpIntent":
         return get_help_response()
     elif intent_name in ("AMAZON.CancelIntent", "AMAZON.StopIntent"):
@@ -87,9 +93,9 @@ def on_session_ended(request, session, skill):
 def get_welcome_response(skill):
     session_attributes = {}
     card_title = "Welcome"
-    speech_output = "Welcome to the {} skill. To get some examples of what this skill can do, ask for help now.".format(skill['name'])
     reprompt_text = speech_output
     should_end_session = False
+    speech_output = "Welcome to the {} skill. To get some examples of what this skill can do, ask for help now.".format(skill['name'])
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
@@ -98,9 +104,23 @@ def get_welcome_response(skill):
 def get_info_response(skill):
     session_attributes = {}
     card_title = "{} Info".format(skill['name'])
-    speech_output = "{} is an awesome and custom skill.".format(skill['name'])
     reprompt_text = speech_output
     should_end_session = True
+    speech_output = "{} is an awesome and custom skill.".format(skill['name'])
+
+    return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
+
+def get_main_response(skill):
+    session_attributes = {}
+    card_title = "{}".format(skill['name'])
+    reprompt_text = speech_output
+    should_end_session = True
+
+    responses = skill['responses']
+    random_index = random.randint(0, len(responses) -1)
+    response = responses[random_index]
+    
+    speech_output = response
 
     return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
 
@@ -108,19 +128,18 @@ def get_info_response(skill):
 def get_help_response(skill):
     session_attributes = {}
     card_title = "Help"
-    speech_output = "To use the {} skill, try saying... What is {}.".format(skill['name'], skill['invocation'])
     reprompt_text = speech_output
     should_end_session = False
+    speech_output = "To use the {} skill, try saying... What is {}.".format(skill['name'], skill['invocation'])
 
     return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
 
 
 def handle_session_end_request(skill):
     card_title = "{} Ended".format(skill['name'])
-    speech_output = "Thank you for using the {} skill!".format(skill['name'])
-    # Setting this to true ends the session and exits the skill.
     should_end_session = True
-    
+    speech_output = "Thank you for using the {} skill!".format(skill['name'])
+
     return build_response({}, build_speechlet_response(
         card_title, speech_output, None, should_end_session))
 
