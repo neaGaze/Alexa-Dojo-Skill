@@ -8,15 +8,12 @@ from __future__ import print_function
 import random
 
 def lambda_handler(event, context):
-    """ Route the incoming request based on type (LaunchRequest, IntentRequest,
-    etc.) The JSON body of the request is provided in the event parameter.
+    """ Route the incoming request based on type (LaunchRequest, IntentRequest, etc.) The JSON body of the request is provided in the event parameter.
     """
     print("event.session.application.applicationId=" +
           event['session']['application']['applicationId'])
 
-    """ Uncomment this if statement and populate with your skill's application ID to
-    prevent someone else from configuring a skill that sends requests to this
-    function.
+    """ Uncomment this if statement and populate with your skill's application ID to prevent someone else from configuring a skill that sends requests to this function.
     """
     # if (event['session']['application']['applicationId'] !=
     #         "unique-value-here"):
@@ -40,6 +37,15 @@ def lambda_handler(event, context):
         ],
     }
 
+    INTENTS = {
+        "SkillInfoIntent": get_info_response,
+        "SkillMainIntent": get_main_response,
+        "SkillSlotIntent": get_slot_response,
+        "AMAZON.HelpIntent": get_help_response,
+        "AMAZON.CancelIntent": handle_session_end_request,
+        "AMAZON.StopIntent": handle_session_end_request,
+    }
+
     if event['session']['new']:
         on_session_started(
             {'requestId': event['request']['requestId']},
@@ -49,7 +55,7 @@ def lambda_handler(event, context):
     if event['request']['type'] == "LaunchRequest":
         return on_launch(event['request'], event['session'], SKILL_INFO)
     elif event['request']['type'] == "IntentRequest":
-        return on_intent(event['request'], event['session'], SKILL_INFO)
+        return on_intent(event['request'], event['session'], SKILL_INFO, INTENTS)
     elif event['request']['type'] == "SessionEndedRequest":
         return on_session_ended(event['request'], event['session'], SKILL_INFO)
 
@@ -67,20 +73,11 @@ def on_launch(request, session, skill):
     return get_welcome_response(skill)
 
 
-def on_intent(request, session, skill):
+def on_intent(request, session, skill, intents):
     """ Called when the user specifies an intent for this skill """
 
     intent = request['intent']
     intent_name = request['intent']['name']
-
-    intents = {
-        "SkillInfoIntent": get_info_response,
-        "SkillMainIntent": get_main_response,
-        "SkillSlotIntent": get_slot_response,
-        "AMAZON.HelpIntent": get_help_response,
-        "AMAZON.CancelIntent": handle_session_end_request,
-        "AMAZON.StopIntent": handle_session_end_request,
-    }
 
     # Dispatch to your skill's intent handlers
     if intent_name in intents:
@@ -121,6 +118,26 @@ def get_info_response(skill, request):
 
     return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
 
+
+def get_help_response(skill, request):
+    session_attributes = {}
+    card_title = "Help"
+    speech_output = "To use the {} skill, try saying... What is {}.".format(skill['name'], skill['invocation'])
+    reprompt_text = speech_output
+    should_end_session = False
+
+    return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
+
+
+def handle_session_end_request(skill, request):
+    card_title = "{} Ended".format(skill['name'])
+    should_end_session = True
+    speech_output = "Thank you for using the {} skill!".format(skill['name'])
+
+    return build_response({}, build_speechlet_response(
+        card_title, speech_output, None, should_end_session))
+
+
 def get_main_response(skill, request):
     session_attributes = {}
     card_title = "{}".format(skill['name'])
@@ -149,25 +166,6 @@ def get_slot_response(skill, request):
     reprompt_text = speech_output
 
     return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
-
-
-def get_help_response(skill, request):
-    session_attributes = {}
-    card_title = "Help"
-    speech_output = "To use the {} skill, try saying... What is {}.".format(skill['name'], skill['invocation'])
-    reprompt_text = speech_output
-    should_end_session = False
-
-    return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
-
-
-def handle_session_end_request(skill, request):
-    card_title = "{} Ended".format(skill['name'])
-    should_end_session = True
-    speech_output = "Thank you for using the {} skill!".format(skill['name'])
-
-    return build_response({}, build_speechlet_response(
-        card_title, speech_output, None, should_end_session))
 
 
 # --------------- Helpers that build all of the responses ----------------------
