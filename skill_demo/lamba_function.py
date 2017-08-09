@@ -112,7 +112,7 @@ def get_welcome_response(skill):
 def get_info_response(skill, request):
     session_attributes = {}
     card_title = "{} Info".format(skill['name'])
-    speech_output = "{} is an awesome and custom skill.".format(skill['name'])
+    speech_output = "{} is designed to brighten your day by giving you or your friends a compliment. If you would like examples of what this skill can do, ask for help now.".format(skill['name'], skill['name'])
     reprompt_text = speech_output
     should_end_session = True
 
@@ -122,7 +122,7 @@ def get_info_response(skill, request):
 def get_help_response(skill, request):
     session_attributes = {}
     card_title = "Help"
-    speech_output = "To use the {} skill, try saying... What is {}.".format(skill['name'], skill['invocation'])
+    speech_output = "To use the {} skill, try saying... give me a compliment..., or give Jon a compliment. For information about this skill, then say... what is {}".format(skill['name'], skill['invocation'])
     reprompt_text = speech_output
     should_end_session = False
 
@@ -157,7 +157,9 @@ def get_slot_response(skill, request):
     card_title = "{}".format(skill['name'])
     should_end_session = True
 
-    slot = request["intent"]["slots"][skill['slot_name']]["value"]
+    slot_value = request["intent"]["slots"][skill['slot_name']]["value"]
+    slot = slot_value if slot_value != "{}" else "friend"
+
     responses = skill['slot_responses']
     random_index = random.randint(0, len(responses) -1)
     response = responses[random_index]
