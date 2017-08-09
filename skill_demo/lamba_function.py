@@ -15,9 +15,9 @@ def lambda_handler(event, context):
 
     """ Uncomment this if statement and populate with your skill's application ID to prevent someone else from configuring a skill that sends requests to this function.
     """
-    # if (event['session']['application']['applicationId'] !=
-    #         "unique-value-here"):
-    #     raise ValueError("Invalid Application ID")
+    if (event['session']['application']['applicationId'] !=
+            "amzn1.ask.skill.4f5e48b2-99e1-433b-9f7c-c8a67fc1672c"):
+        raise ValueError("Invalid Application ID")
 
     SKILL_INFO = {
         'name': "Simple Compliment",
