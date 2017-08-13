@@ -114,7 +114,7 @@ def get_info_response(skill, request):
     card_title = "{} Info".format(skill['name'])
     speech_output = "{} is designed to brighten your day by giving you or your friends a compliment. If you would like examples of what this skill can do, ask for help now.".format(skill['name'], skill['name'])
     reprompt_text = speech_output
-    should_end_session = True
+    should_end_session = False
 
     return build_response(session_attributes, build_speechlet_response(card_title,speech_output,reprompt_text,should_end_session))
 
