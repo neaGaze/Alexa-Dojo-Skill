@@ -158,7 +158,7 @@ def get_slot_response(skill, request):
     should_end_session = True
 
     slot_value = request["intent"]["slots"][skill['slot_name']]["value"]
-    slot = slot_value if slot_value != "{}" else "friend"
+    slot = slot_value if slot_value.isalpha() else "friend"
 
     responses = skill['slot_responses']
     random_index = random.randint(0, len(responses) -1)
