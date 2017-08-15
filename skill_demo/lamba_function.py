@@ -16,7 +16,7 @@ def lambda_handler(event, context):
     """ Uncomment this if statement and populate with your skill's application ID to prevent someone else from configuring a skill that sends requests to this function.
     """
     if (event['session']['application']['applicationId'] !=
-            "amzn1.ask.skill.4f5e48b2-99e1-433b-9f7c-c8a67fc1672c"):
+            "unique-value-here"):
         raise ValueError("Invalid Application ID")
 
     SKILL_INFO = {
@@ -157,8 +157,14 @@ def get_slot_response(skill, request):
     card_title = "{}".format(skill['name'])
     should_end_session = True
 
-    slot_value = request["intent"]["slots"][skill['slot_name']]["value"]
-    slot = slot_value if slot_value.isalpha() else "friend"
+    slot_key = request["intent"]["slots"][skill['slot_name']]
+    if 'value' in slot_key:
+        slot_value = slot_key["value"]
+
+        if slot_value.isalpha():
+            slot = slot_value
+    else:
+        slot = "friend"
 
     responses = skill['slot_responses']
     random_index = random.randint(0, len(responses) -1)
