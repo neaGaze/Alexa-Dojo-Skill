@@ -11,6 +11,23 @@
         }
       ]
     },
+    {
+      "intent": "SkillMathIntent",
+      "slots": [
+        {
+          "name": "a",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "b",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "operator",
+          "type": "operators"
+        }
+      ]
+    },
     {"intent": "AMAZON.HelpIntent"},
     {"intent": "AMAZON.CancelIntent"},
     {"intent": "AMAZON.StopIntent"}

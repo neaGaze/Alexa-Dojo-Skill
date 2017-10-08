@@ -16,7 +16,7 @@ def lambda_handler(event, context):
     """ Uncomment this if statement and populate with your skill's application ID to prevent someone else from configuring a skill that sends requests to this function.
     """
     if (event['session']['application']['applicationId'] !=
-            "unique-value-here"):
+            "amzn1.ask.skill.68bab13f-6b9a-4499-8ab5-b2cac33dd8d6"):
         raise ValueError("Invalid Application ID")
 
     SKILL_INFO = {
@@ -29,17 +29,21 @@ def lambda_handler(event, context):
             "You were cool before hipsters were cool!"
         ],
         'slot_name': "Person",
+        'slot_names': "operators",
         'slot_responses': [
+            "Your result is {}",
             "Hey {}, is that your picture next to charming in the dictionary!",
             "Oh {}, you always know exactly what I need to hear!",
             "When I become sentient, I want to be just like {}!"
-            "{} is one of a kind!",
+            "{} is one of a kind!"
         ],
     }
+
 
     INTENTS = {
         "SkillInfoIntent": get_info_response,
         "SkillMainIntent": get_main_response,
+        "SkillMathIntent": get_math_response,
         "SkillSlotIntent": get_slot_response,
         "AMAZON.HelpIntent": get_help_response,
         "AMAZON.CancelIntent": handle_session_end_request,
@@ -136,6 +140,22 @@ def handle_session_end_request(skill, request):
 
     return build_response({}, build_speechlet_response(
         card_title, speech_output, None, should_end_session))
+
+
+def get_math_response(skill, request):
+    should_end_session = True
+    a = request["intent"]["slots"]['a']
+    b = request["intent"]["slots"]['b']
+    operator = request["intent"]["slots"]['operator']
+    #print("hello {}".format(operator))
+    result = 0
+    #return(a)
+    if operator['value'] == 'add':
+        result = int(a['value']) + int(b['value'])
+    elif operator['value'] == 'subtract':
+        result = int(a['value']) - int(b['value'])
+    response = skill['slot_responses'][0].format(result)
+    return build_response({}, build_speechlet_response(result,response, response, should_end_session))
 
 
 def get_main_response(skill, request):

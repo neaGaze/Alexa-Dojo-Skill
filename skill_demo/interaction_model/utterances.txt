@@ -6,3 +6,4 @@ SkillMainIntent for a compliment
 SkillSlotIntent to give {Person} a compliment
 SkillSlotIntent give {Person} a compliment
 SkillSlotIntent to compliment {Person}
+SkillMathIntent What is {a} {operator} {b}
